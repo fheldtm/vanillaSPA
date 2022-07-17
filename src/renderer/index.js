@@ -1,3 +1,5 @@
+import { Header } from '../components/Header.js';
+
 export const render = (RootComponent) => /* html */ `
 <!DOCTYPE html>
 <html lang="ko">
@@ -8,6 +10,7 @@ export const render = (RootComponent) => /* html */ `
     <title></title>
   </head>
   <body>
+    ${Header}
     <div id="app">${RootComponent}</div>
 
     <script src="main.js" type="module"></script>

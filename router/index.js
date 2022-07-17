@@ -3,6 +3,7 @@ import path from 'path';
 
 import { getMimeType, isStatic } from '../middleware/index.js';
 import { render } from '../src/renderer/index.js';
+import { notFound } from '../src/renderer/notFound.js';
 import { TodoList } from '../src/components/todolist.js';
 
 const __options = {
@@ -11,7 +12,7 @@ const __options = {
   success: false,
 };
 
-const getPage = (link) => path.join(__dirname, 'src', 'pages', link);
+const getViewPage = (link) => path.join(__dirname, 'src', 'views', link);
 
 const GET = (url, cb) => {
   const { req, res } = __options;
@@ -68,20 +69,13 @@ export const router = (req, res) => {
   // html 문서 설정
   GET('/', (req, res) => {
     res.statusCode = 200;
-    const read = fs.createReadStream(getPage('index.html'));
-    read.pipe(res);
-  });
-
-  GET('/ssr', (req, res) => {
-    res.statusCode = 200;
     res.end(render(TodoList()), 'utf-8');
   });
 
   // error page routing
   GET('/notfound', (req, res) => {
     res.statusCode = 200;
-    const read = fs.createReadStream(getPage('404.html'));
-    read.pipe(res);
+    res.end(notFound, 'utf-8');
   });
 
   // not found any router
