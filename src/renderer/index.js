@@ -1,3 +1,4 @@
+export const render = (RootComponent) => /* html */ `
 <!DOCTYPE html>
 <html lang="ko">
   <head>
@@ -7,8 +8,9 @@
     <title></title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">${RootComponent}</div>
 
     <script src="main.js" type="module"></script>
   </body>
 </html>
+`;

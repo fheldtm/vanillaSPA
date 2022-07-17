@@ -2,8 +2,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { getMimeType, isStatic } from '../middleware/index.js';
+import { render } from '../src/renderer/index.js';
+import { TodoList } from '../src/components/todolist.js';
 
-const _options = {
+const __options = {
   req: null,
   res: null,
   success: false,
@@ -12,7 +14,7 @@ const _options = {
 const getPage = (link) => path.join(__dirname, 'src', 'pages', link);
 
 const GET = (url, cb) => {
-  const { req, res } = _options;
+  const { req, res } = __options;
   if (req.method === 'GET') {
     if (req.url === url) {
       if (!cb || typeof cb !== 'function') {
@@ -21,25 +23,25 @@ const GET = (url, cb) => {
 
       cb(req, res);
 
-      _options.success = true;
+      __options.success = true;
     }
   }
 };
 
 const REDIRECT = (url) => {
-  const { req, res } = _options;
+  const { req, res } = __options;
   const host = req.headers.host;
 
-  _options.success = true;
+  __options.success = true;
   res.statusCode = 302;
   res.setHeader('Location', `http://${host}${url}`);
   res.end();
 };
 
 export const router = (req, res) => {
-  _options.req = req;
-  _options.res = res;
-  _options.success = false;
+  __options.req = req;
+  __options.res = res;
+  __options.success = false;
 
   const url = req.url;
 
@@ -61,24 +63,29 @@ export const router = (req, res) => {
     }
   }
 
+  res.setHeader('Content-Type', mimetype);
+
   // html 문서 설정
   GET('/', (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
     res.statusCode = 200;
     const read = fs.createReadStream(getPage('index.html'));
     read.pipe(res);
   });
 
+  GET('/ssr', (req, res) => {
+    res.statusCode = 200;
+    res.end(render(TodoList()), 'utf-8');
+  });
+
   // error page routing
   GET('/notfound', (req, res) => {
-    res.setHeader('Content-Type', 'text/html');
     res.statusCode = 200;
     const read = fs.createReadStream(getPage('404.html'));
     read.pipe(res);
   });
 
   // not found any router
-  if (!_options.success) {
+  if (!__options.success) {
     REDIRECT('/notfound');
   }
 };
