@@ -18,11 +18,9 @@ addStatic('/pages');
 addStatic('/store');
 addStatic('/main.js');
 
-const directorys = fs.readdirSync(path.join(__dirname, 'src'));
-const files = fs.readFileSync(path.join(__dirname, 'src'));
-console.log(directorys)
-
 // create server
 const server = http.createServer(router);
 
-server.listen(5555);
+const port = 5555;
+server.listen(port);
+console.log(`http://localhost:${port}`);
