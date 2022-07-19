@@ -4,15 +4,13 @@ import path from 'path';
 import { getMimeType, isStatic } from '../middleware/index.js';
 import { render } from '../src/renderer/index.js';
 import { notFound } from '../src/renderer/notFound.js';
-import { TodoList } from '../src/components/todolist.js';
+import { TodoList } from '../src/components/Todolist.js';
 
 const __options = {
   req: null,
   res: null,
   success: false,
 };
-
-const getViewPage = (link) => path.join(__dirname, 'src', 'views', link);
 
 const GET = (url, cb) => {
   const { req, res } = __options;

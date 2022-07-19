@@ -16,38 +16,80 @@ export const getRandom = (length = 10) => {
 // camel case로 작성된 css를 실제 css로 수정
 export const style = str => str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
 
+/**
+ * class object 를 실제 css로 변경
+ * 그런데 랜덤값을 곁들인
+ */
 let __css = ''
 let __classes = {};
-export const setClass = (classes) => {
+export const addClass = (classes) => {
   __classes = {};
-  const result = Object.keys(classes)
+
+  const result = Object
+		.keys(classes)
     .map(className => {
       const styles = classes[className];
-      const parseClassName = `${className}-vnl-${getRandom()}`;
+      const parseClassName = `c-vnl-${getRandom()}`;
       __classes[className] = parseClassName;
-      const s = Object.keys(styles)
-        .map((styleName) => `${style(styleName)}:${styles[styleName]};`).join('')
-      return `${parseClassName}{${s}}`
-    }).join('');
+
+      const s = Object
+				.keys(styles)
+        .map((styleName) => `${style(styleName)}:${styles[styleName]};`)
+				.join('')
+
+      return `.${parseClassName}{${s}}`
+    })
+		.join('');
+
   __css += result;
 
-  // css 파일 생성
-  writeCssFile();
-
-  // class 값 return
+  // class 복제 값 return
   return JSON.parse(JSON.stringify(__classes));
 };
 
 /**
- * @description 새로운 css 파일 생성
- * @Todo 캐시 처리 어떻게 할지 생각해보기
+ * @description 기존 css 파일 전부 제거
  */
-const writeCssFile = () => {
-  const cssFileName = `vnl${getRandom()}.css`
+export const removeAllCssFiles = () => {
   const __dirname = path.resolve();
-  fs.writeFile(path.join(__dirname, 'src', 'assets', 'css', cssFileName), __css, (err) => {
-    if (err) {
-      console.error(err);
-    }
-  })
+	const cssDirPath = path.join(__dirname, 'src', 'assets', 'css');
+	const files = getAllCssFiles()
+	files.map((file) => {
+		fs.unlinkSync(path.join(cssDirPath, file))
+	})
+}
+
+// css 폴더의 파일 전부 조회
+export const getAllCssFiles = () => {
+  const __dirname = path.resolve();
+	const cssDirPath = path.join(__dirname, 'src', 'assets', 'css');
+	try {
+		const files = fs.readdirSync(path.join(cssDirPath))
+		return files;
+	} catch (err) {
+		console.error(err);
+		return []
+	}
+}
+
+/**
+ * @description 새로운 css 파일 생성
+ * 최초 1회 빌드하여 캐시값 유지
+ */
+export const buildCssFile = () => {
+	removeAllCssFiles();
+
+  const cssFileName = `vnl-${getRandom()}.css`
+  const __dirname = path.resolve();
+	const cssDirPath = path.join(__dirname, 'src', 'assets', 'css');
+	try {
+		fs.mkdirSync(cssDirPath, { recursive: true })
+		try {
+			fs.writeFileSync(path.join(cssDirPath, cssFileName), __css)
+		} catch (err) {
+			console.error(err);
+		}
+	} catch (error) {
+		console.error(error);
+	}
 }

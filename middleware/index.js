@@ -1,5 +1,8 @@
 import path from 'path';
 
+/**
+ * @description MimeType 확인
+ */
 export const getMimeType = (type) => {
   let mimetype = '';
   switch (type) {
@@ -20,6 +23,9 @@ export const getMimeType = (type) => {
   return mimetype;
 };
 
+/**
+ * @description add static directory or file
+ */
 const statics = [];
 export const addStatic = (dir) => statics.push(dir);
 export const isStatic = (url) => {
